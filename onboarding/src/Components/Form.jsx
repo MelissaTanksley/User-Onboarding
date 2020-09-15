@@ -22,10 +22,10 @@ export default function Form({ setPost, post }) {
 
   // schema is used for all validation to determine whether the input is valid or not
   const formSchema = yup.object().shape({
-    name: yup.string().required("Name is required"),
+    name: yup.string().min(3, 'Must be at least 3 characters').required("Name is required"),
     email: yup
       .string()
-      .email()
+      .email("Must be a valid email address")
       .required("Must be a valid email address"),
     password: yup.string().required(),
     tos: yup.boolean().oneOf([true], "You must accept the terms and conditions"),
@@ -125,7 +125,7 @@ export default function Form({ setPost, post }) {
           <option value="ticketbooth">Ticket Booth</option>
           <option value="vendor">Vendor</option>
         </Input>
-        {errors.jobs.value === "" && errors.jobs.value ? (
+        {errors.jobs ? (
           <Alert color="warning">{errors.jobs}</Alert>) : null}
       </FormGroup>
 
@@ -136,7 +136,7 @@ export default function Form({ setPost, post }) {
           <Alert color="warning">{errors.tos}</Alert>) : null
         }
         </FormGroup>
-        <Button color="primary" style={{ marginTop: '20px', width: '110px' }}>Sign Up</Button>
+        <Button color="primary" disabled={isButtonDisabled} style={{ marginTop: '20px', width: '110px' }}>Sign Up</Button>
               
         {/* disabled={isButtonDisabled}  */}
 
