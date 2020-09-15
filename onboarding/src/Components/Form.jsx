@@ -16,6 +16,8 @@ export default function Form({ setPost, post }) {
   const [serverError, setServerError] = useState('')
   const [formState, setFormState] = useState(initialFormState);
 
+  const [formValid, setFormValid] = useState(false)
+
   const [isButtonDisabled, setButtonDisabled] = useState(true)
 
   const [errors, setErrors] = useState(initialFormState)
@@ -35,13 +37,13 @@ export default function Form({ setPost, post }) {
   const validateChange = e => {
     yup
     .reach(formSchema, e.target.name, e.target.type)
-    .validate(e.target.type !== 'checkbox' ? e.target.value : e.target.checked)
-      .then(valid => {
+    .validate(e.target.name !== 'tos' ? e.target.value : e.target.checked)
+    .then(valid => {
         setErrors({ ...errors, [e.target.name]: "" })
       })
       .catch(err => {
         console.log("Form -> err", err)
-        setErrors({ ...errors, [e.target.name]: err.errors[0] })
+        setErrors({ ...errors, [name]: err.errors })
       })
   }
 
@@ -93,50 +95,92 @@ export default function Form({ setPost, post }) {
   console.log(formState);
 
   return (
-    <ReactForm style={{ padding: '90px' }} onSubmit={formSubmit}>
+    <ReactForm style={{ padding: '90px' }} onSubmit={formValid ? formSubmit : e => e.preventDefault()}>
       <FormGroup>
-        <Label for="name">Name</Label>
-        <Input type="text" name="name" id="name" placeholder="John Jacob" onChange={inputChange} value={formState.name} />
-        {errors.name.length > 0 ? <Alert color="warning">{errors.name}</Alert> : null}
+      <Label for="name">Name</Label>
+      <Input
+          type="text"
+          name="name"
+          id="name"
+          placeholder="John Jacob"
+          onBlur={e => validateChange(e)}
+          onChange={inputChange}
+          value={formState.name}
+          data-cy="name"
+        />
+        {/* {errors.name && touched.name ? (<Alert color="warning">{errors.name}</Alert>) : null} */}
       </FormGroup>
       <Row form>
         <Col md={6}>
           <FormGroup>
             <Label for="email">Email</Label>
-            <Input type="email" name="email" id="email" placeholder="email@email.com" onChange={inputChange} value={formState.email} />
-            {errors.email.length > 0 ? (
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="email@email.com"
+              onBlur={e => validateChange(e)}
+              onChange={inputChange}
+              value={formState.email}
+              data-cy="email"
+            />
+            {errors.email ? (
               <Alert color="warning">{errors.email}</Alert>) : null}
           </FormGroup>
         </Col>
         <Col md={6}>
           <FormGroup>
             <Label for="password">Password</Label>
-            <Input type="password" name="password" id="password" placeholder="Create a Password" onChange={inputChange} value={formState.password} />
-            {errors.password.length > 0 ? (
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Create a Password"
+              onBlur={e => validateChange(e)}
+              onChange={inputChange}
+              value={formState.password}
+              data-cy="password"
+            />
+            {errors.password? (
               <Alert color="warning">{errors.password}</Alert>) : null}
           </FormGroup>
         </Col>
       </Row>
       <FormGroup>
         <Label for="jobs">Jobs</Label>
-        <Input type="select" name="jobs" id="jobs" onChange={inputChange} value={formState.jobs}>
+        <Input
+          type="select"
+          name="jobs"
+          id="jobs"
+          onBlur={e => validateChange(e)}
+          onChange={inputChange}
+          value={formState.jobs}
+          data-cy="jobs"
+        >
           <option value="" disable>--Please select a job--</option>
           <option value="photographer">Photographer</option>
           <option value="ticketbooth">Ticket Booth</option>
-          <option value="vendor">Vendor</option>
         </Input>
         {errors.jobs ? (
           <Alert color="warning">{errors.jobs}</Alert>) : null}
       </FormGroup>
 
       <FormGroup check>
-        <Input type="checkbox" name="tos" id="tos" onChange={inputChange} checked={formState.tos} />
+      <Input
+          type="checkbox"
+          name="tos"
+          id="tos"
+          onChange={inputChange}
+          checked={formState.tos}
+          data-cy="tos"
+        />
         <Label for="tos" check>Terms &amp; Conditions</Label>
         {errors.tos ? (
           <Alert color="warning">{errors.tos}</Alert>) : null
         }
         </FormGroup>
-        <Button color="primary" disabled={isButtonDisabled} style={{ marginTop: '20px', width: '110px' }}>Sign Up</Button>
+        <Button color="primary" type="submit" style={{ marginTop: '20px', width: '110px' }} data-cy="submit">Sign Up</Button>
+
               
         {/* disabled={isButtonDisabled}  */}
 
